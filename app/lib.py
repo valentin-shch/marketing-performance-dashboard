@@ -54,9 +54,35 @@ def fmt_pct_delta(x: float) -> str | None:
 # st.plotly_chart applies its own default theme over the figure unless told
 # not to, which was silently overriding these sizes — see PLOTLY_THEME below.
 # Set per-element, not just the global font, so nothing falls back to a
-# smaller default regardless of template quirks.
+# smaller default regardless of template quirks. These are the desktop
+# sizes; MOBILE_CSS below overrides them smaller on narrow viewports via
+# a media query, since a Python-level constant can't vary by device.
 AXIS_FONT_SIZE = 16
 LEGEND_FONT_SIZE = 15
+
+# Plotly renders tick/legend text as SVG with an inline font-size attribute,
+# which a CSS rule (even without !important) still outranks — so this can
+# safely shrink text on phones without touching what desktop actually ships.
+# 640px is a plain phone-width cutoff, not tied to Streamlit's own column-
+# stacking breakpoint.
+MOBILE_CSS = """
+<style>
+@media (max-width: 640px) {
+    h1 { font-size: 1.6rem !important; }
+    .js-plotly-plot .xtick text,
+    .js-plotly-plot .ytick text,
+    .js-plotly-plot .y2tick text,
+    .js-plotly-plot .g-xtitle text,
+    .js-plotly-plot .g-ytitle text,
+    .js-plotly-plot .g-y2title text {
+        font-size: 13px !important;
+    }
+    .js-plotly-plot .legend text {
+        font-size: 12px !important;
+    }
+}
+</style>
+"""
 
 # Passed to every st.plotly_chart call so our own layout wins outright.
 PLOTLY_THEME = None

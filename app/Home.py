@@ -13,10 +13,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from lib import PLOTLY_CONFIG, PLOTLY_THEME, chart_layout, client_selector, fmt_currency, fmt_pct_delta, fmt_roas, load_ads
+from lib import MOBILE_CSS, PLOTLY_CONFIG, PLOTLY_THEME, chart_layout, client_selector, fmt_currency, fmt_pct_delta, fmt_roas, load_ads
 from pipeline import metrics
 
 st.set_page_config(page_title="Overview - Marketing Performance", layout="wide")
+st.markdown(MOBILE_CSS, unsafe_allow_html=True)
 
 st.title("Marketing Performance Dashboard")
 st.caption(
