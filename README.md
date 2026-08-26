@@ -10,8 +10,8 @@ data here.
 
 ## Status
 
-Data generation and cleaning pipeline. Metrics and the Streamlit app
-aren't built yet.
+Data generation, cleaning pipeline, and metrics are built and tested.
+The Streamlit app isn't built yet.
 
 ## Stack
 
@@ -23,14 +23,15 @@ cleaned into parquet, and read from disk.
     data/generate.py     synthetic data generator, seeded, reproducible
     data/raw/             generator output (messy, on purpose, committed)
     pipeline/clean.py    raw exports -> clean, joined parquet
-    pipeline/metrics.py  business metric calculations (not yet built)
+    pipeline/metrics.py  business metric calculations, pure functions
     app/                  Streamlit app (not yet built)
-    tests/                pytest for the metric functions (not yet built)
+    tests/                pytest for the metric functions
 
 ## Running the pipeline
 
     python data/generate.py
     python pipeline/clean.py
+    pytest tests/
 
 `generate.py` regenerates `data/raw/` with an 18-month window ending last
 month, so the demo data doesn't go stale. The random seed keeps the
@@ -41,3 +42,7 @@ campaign quarter labels shift with the run date.
 mixed currencies and date formats, a timezone bug, inconsistent campaign
 names, unmatched CRM deals), and writes `data/clean/*.parquet` plus a
 `data_quality_summary.json`.
+
+`metrics.py` computes ROAS, cost per lead, period-over-period trends,
+spend-decile marginal efficiency, and campaign/deal flags — all as pure
+functions over the clean tables, covered by `tests/`.
