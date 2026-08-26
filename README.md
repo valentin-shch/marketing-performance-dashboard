@@ -1,23 +1,43 @@
 # Marketing Performance Dashboard
 
-A white-label marketing performance dashboard for a digital marketing agency's
-clients — spend, ROAS, campaign efficiency, and CRM-attributed pipeline
-across Google Ads, Meta Ads, LinkedIn Ads, and organic search.
+**[Live demo →](https://marketing-performance-dashboard-sc98m2xblpde4zh4yufbdb.streamlit.app/)**
 
-All data in this repo is synthetic, generated to mirror the structure (and
-the mess) of real Google Ads, Meta, and CRM exports. There is no real client
-data here.
+A white-label performance dashboard built for how a digital marketing agency actually
+works: one dataset, several clients, and someone outside the agency — a client, not an
+internal analyst — who needs to see spend, ROAS, and pipeline without learning to read raw
+ad exports.
 
-## Status
+Pick a client from the sidebar and every page — trends, channel efficiency, campaign-level
+flags, CRM attribution, data quality — filters to that account. This is a portfolio piece,
+so the data is synthetic (details below), but the pipeline, the messiness it cleans up, and
+the dashboard logic are built the way I'd build them for a real client.
 
-Data generation, cleaning pipeline, and metrics are built and tested. All
-five app pages are up: Overview, Channel Efficiency, Campaign Explorer,
-Pipeline & Attribution, and Data Quality.
+## What's in it
+
+- **Overview** — spend, ROAS, and CPL trends over time, with a plain-language read on which way things are moving.
+- **Channel Efficiency** — where each euro of spend is landing: marginal ROAS by spend decile, per channel, flagging channels past the point of diminishing returns.
+- **Campaign Explorer** — every campaign for the selected client, auto-flagged for high spend/low return or high return/underfunded, filterable by channel, type, and theme.
+- **Pipeline & Attribution** — how much of the CRM pipeline can actually be traced back to a campaign, and how much can't — stated plainly, not softened into a coverage number.
+- **Data Quality** — what the cleaning pipeline actually fixed (duplicates, mixed currencies, a timezone bug, inconsistent campaign naming, missing values) and how much of the raw data needed it.
+
+Every chart and table is responsive down to a phone screen — this is meant to be checked
+from a client's phone in a meeting, not just from a laptop.
+
+## The data
+
+Nothing here is real. `data/generate.py` builds about 18 months of synthetic ad exports
+(Google Ads, Meta Ads, LinkedIn Ads, Organic Search) and CRM deals for three fictional
+clients, deliberately messy in the ways real exports are: duplicate rows, three different
+date formats, one platform reporting in the wrong currency, a timezone bug, campaign names
+that don't follow one convention, and deals that don't all cleanly match back to a
+campaign. `pipeline/clean.py` fixes all of it — the Data Quality page shows the receipts.
 
 ## Stack
 
-Python, pandas, Plotly, Streamlit. No database — data is generated to CSV,
-cleaned into parquet, and read from disk.
+Python, pandas, Plotly, Streamlit. No database — data is generated to CSV, cleaned into
+parquet, and read from disk. `pipeline/metrics.py` is a set of pure functions (ROAS, CPL,
+trends, flags) covered by `tests/`, kept separate from the app so the numbers can be
+checked without running Streamlit at all.
 
 ## Structure
 
@@ -31,23 +51,35 @@ cleaned into parquet, and read from disk.
                             Pipeline & Attribution, Data Quality
     tests/                pytest for the metric functions
 
-## Running the pipeline
+## Running it locally
 
     python data/generate.py
     python pipeline/clean.py
     pytest tests/
     streamlit run app/Overview.py
 
-`generate.py` regenerates `data/raw/` with an 18-month window ending last
-month, so the demo data doesn't go stale. The random seed keeps the
-*shape* of the data stable across runs — only the calendar dates and
-campaign quarter labels shift with the run date.
+`generate.py` regenerates `data/raw/` with an 18-month window ending last month, so the
+demo data doesn't go stale. The random seed keeps the *shape* of the data stable across
+runs — only the calendar dates and campaign quarter labels shift with the run date.
 
-`clean.py` reads `data/raw/`, fixes the deliberate messiness (duplicates,
-mixed currencies and date formats, a timezone bug, inconsistent campaign
-names, unmatched CRM deals), and writes `data/clean/*.parquet` plus a
-`data_quality_summary.json`.
+`clean.py` reads `data/raw/`, fixes the messiness described above, and writes
+`data/clean/*.parquet` plus a `data_quality_summary.json` that the Data Quality page reads
+from directly.
 
-`metrics.py` computes ROAS, cost per lead, period-over-period trends,
-spend-decile marginal efficiency, and campaign/deal flags — all as pure
-functions over the clean tables, covered by `tests/`.
+## Deploying
+
+Streamlit Community Cloud runs the repo as committed — `pip install -r requirements.txt`,
+then `streamlit run app/Overview.py`. There's no separate pipeline step, so
+`data/clean/*.parquet` (the pipeline's output, not just `data/raw/`) has to be committed
+too, or every page fails to load. Regenerate and re-clean first if the data's gone stale:
+
+    python data/generate.py
+    python pipeline/clean.py
+
+Then, from [share.streamlit.io](https://share.streamlit.io):
+
+1. Connect the GitHub repo.
+2. Main file path: `app/Overview.py`
+3. Deploy.
+
+No secrets or API keys to configure — nothing in this app calls an external service.
