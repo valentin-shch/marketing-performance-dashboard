@@ -60,27 +60,39 @@ def fmt_pct_delta(x: float) -> str | None:
 AXIS_FONT_SIZE = 16
 LEGEND_FONT_SIZE = 15
 
+# Wrap a block in st.container(key=DESKTOP_ONLY_KEY) / MOBILE_ONLY_KEY to
+# show it only above/below the 640px cutoff — e.g. a wide table on desktop,
+# a stacked card list on mobile, for the same underlying data. Both still
+# render server-side; MOBILE_CSS just hides one via display:none, since
+# there's no way to know the viewport before the page is sent.
+DESKTOP_ONLY_KEY = "desktop_only"
+MOBILE_ONLY_KEY = "mobile_only"
+
 # Plotly renders tick/legend text as SVG with an inline font-size attribute,
 # which a CSS rule (even without !important) still outranks — so this can
 # safely shrink text on phones without touching what desktop actually ships.
 # 640px is a plain phone-width cutoff, not tied to Streamlit's own column-
 # stacking breakpoint.
-MOBILE_CSS = """
+MOBILE_CSS = f"""
 <style>
-@media (max-width: 640px) {
-    h1 { font-size: 1.6rem !important; }
+@media (max-width: 640px) {{
+    h1 {{ font-size: 1.6rem !important; }}
     .js-plotly-plot .xtick text,
     .js-plotly-plot .ytick text,
     .js-plotly-plot .y2tick text,
     .js-plotly-plot .g-xtitle text,
     .js-plotly-plot .g-ytitle text,
-    .js-plotly-plot .g-y2title text {
+    .js-plotly-plot .g-y2title text {{
         font-size: 13px !important;
-    }
-    .js-plotly-plot .legend text {
+    }}
+    .js-plotly-plot .legend text {{
         font-size: 12px !important;
-    }
-}
+    }}
+    .st-key-{DESKTOP_ONLY_KEY} {{ display: none !important; }}
+}}
+@media (min-width: 641px) {{
+    .st-key-{MOBILE_ONLY_KEY} {{ display: none !important; }}
+}}
 </style>
 """
 

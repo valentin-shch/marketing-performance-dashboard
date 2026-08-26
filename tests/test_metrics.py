@@ -105,9 +105,12 @@ def test_campaign_summary_aggregates_by_campaign():
         "client": ["A", "A"], "channel": ["Google Ads", "Google Ads"],
         "campaign_name": ["Brand", "Brand"],
         "spend": [100, 50], "conversion_value": [300, 150], "conversions": [3, 2],
+        "campaign_country": ["ES", "ES"], "campaign_type": ["Search", "Search"],
+        "campaign_theme": ["Brand", "Brand"], "campaign_period": ["2025Q1", "2025Q1"],
     })
     result = metrics.campaign_summary(df)
     assert len(result) == 1
+    assert result.iloc[0]["campaign_theme"] == "Brand"
     row = result.iloc[0]
     assert row["spend"] == 150
     assert row["roas"] == pytest.approx(3.0)

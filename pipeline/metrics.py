@@ -127,10 +127,17 @@ def diminishing_returns_channels(decile_df: pd.DataFrame, drop_threshold: float 
 
 
 def campaign_summary(df: pd.DataFrame) -> pd.DataFrame:
+    # campaign_country/type/theme/period are constant within a campaign_name
+    # by construction (parsed once per name in clean.py), so "first" is a
+    # plain lookup here, not a lossy aggregation choice.
     grouped = df.groupby(["client", "channel", "campaign_name"]).agg(
         spend=("spend", "sum"),
         conversion_value=("conversion_value", "sum"),
         conversions=("conversions", "sum"),
+        campaign_country=("campaign_country", "first"),
+        campaign_type=("campaign_type", "first"),
+        campaign_theme=("campaign_theme", "first"),
+        campaign_period=("campaign_period", "first"),
     ).reset_index()
     grouped["roas"] = grouped.apply(lambda r: safe_divide(r["conversion_value"], r["spend"]), axis=1)
     return grouped

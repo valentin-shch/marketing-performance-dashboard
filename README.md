@@ -11,8 +11,8 @@ data here.
 ## Status
 
 Data generation, cleaning pipeline, and metrics are built and tested.
-The Streamlit app is in progress — Overview and Channel Efficiency pages
-are up.
+The Streamlit app is in progress — Overview, Channel Efficiency, and
+Campaign Explorer pages are up.
 
 ## Stack
 
@@ -27,7 +27,7 @@ cleaned into parquet, and read from disk.
     pipeline/metrics.py  business metric calculations, pure functions
     app/Overview.py       Streamlit app entry point (Overview page)
     app/lib.py            shared data loading, formatting, chart/CSS helpers
-    app/pages/             Channel Efficiency; remaining pages in progress
+    app/pages/             Channel Efficiency, Campaign Explorer; more in progress
     tests/                pytest for the metric functions
 
 ## Running the pipeline
