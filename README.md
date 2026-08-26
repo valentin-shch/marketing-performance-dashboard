@@ -11,7 +11,8 @@ data here.
 ## Status
 
 Data generation, cleaning pipeline, and metrics are built and tested.
-The Streamlit app is in progress — Overview page is up.
+The Streamlit app is in progress — Overview and Channel Efficiency pages
+are up.
 
 ## Stack
 
@@ -24,9 +25,9 @@ cleaned into parquet, and read from disk.
     data/raw/             generator output (messy, on purpose, committed)
     pipeline/clean.py    raw exports -> clean, joined parquet
     pipeline/metrics.py  business metric calculations, pure functions
-    app/Home.py           Streamlit app entry point (Overview page)
-    app/lib.py            shared data loading and formatting helpers
-    app/pages/             remaining pages (in progress)
+    app/Overview.py       Streamlit app entry point (Overview page)
+    app/lib.py            shared data loading, formatting, chart/CSS helpers
+    app/pages/             Channel Efficiency; remaining pages in progress
     tests/                pytest for the metric functions
 
 ## Running the pipeline
@@ -34,7 +35,7 @@ cleaned into parquet, and read from disk.
     python data/generate.py
     python pipeline/clean.py
     pytest tests/
-    streamlit run app/Home.py
+    streamlit run app/Overview.py
 
 `generate.py` regenerates `data/raw/` with an 18-month window ending last
 month, so the demo data doesn't go stale. The random seed keeps the

@@ -95,6 +95,10 @@ def test_spend_decile_roas_and_diminishing_returns_flag():
     assert flags["Saturating"] is True
     assert flags["Healthy"] is False
 
+    ratios = metrics.decile_ratio_to_peak(deciles)
+    assert ratios["Saturating"] == pytest.approx(0.25)  # top decile 1.0 / peak 4.0
+    assert ratios["Healthy"] == pytest.approx(1.0)  # constant roas, top decile == peak
+
 
 def test_campaign_summary_aggregates_by_campaign():
     df = pd.DataFrame({

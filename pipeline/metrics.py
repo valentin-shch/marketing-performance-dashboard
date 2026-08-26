@@ -99,17 +99,30 @@ def spend_decile_roas(df: pd.DataFrame, n_bins: int = 10) -> pd.DataFrame:
     )
 
 
+def decile_ratio_to_peak(decile_df: pd.DataFrame) -> dict[str, float]:
+    """Highest-spend decile's ROAS as a fraction of the channel's own peak-
+    decile ROAS. This is the exact number diminishing_returns_channels()
+    thresholds against — exposed on its own so it can be shown for every
+    channel, not just the ones that cross the line.
+    """
+    ratios = {}
+    for channel, sub in decile_df.groupby("channel"):
+        sub = sub.sort_values("decile")
+        peak_roas = sub["roas"].max()
+        top_decile_roas = sub.iloc[-1]["roas"]
+        ratios[channel] = safe_divide(top_decile_roas, peak_roas)
+    return ratios
+
+
 def diminishing_returns_channels(decile_df: pd.DataFrame, drop_threshold: float = 0.75) -> dict[str, bool]:
     """Flag a channel if its highest-spend decile's ROAS has fallen well below
     the channel's own peak-decile ROAS — the signature of a channel past the
     point where extra budget still pays for itself.
     """
+    ratios = decile_ratio_to_peak(decile_df)
     flags = {}
-    for channel, sub in decile_df.groupby("channel"):
-        sub = sub.sort_values("decile")
-        peak_roas = sub["roas"].max()
-        top_decile_roas = sub.iloc[-1]["roas"]
-        flags[channel] = bool(peak_roas > 0 and top_decile_roas < drop_threshold * peak_roas)
+    for channel, ratio in ratios.items():
+        flags[channel] = bool(not pd.isna(ratio) and ratio < drop_threshold)
     return flags
 
 
