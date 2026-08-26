@@ -39,6 +39,17 @@ def client_selector(ads: pd.DataFrame) -> str:
     return st.selectbox("Client", clients, key="selected_client")
 
 
+# One consistent palette for channels across every page — Channel Efficiency,
+# Pipeline & Attribution, and anywhere else a chart breaks numbers out by
+# channel.
+CHANNEL_COLORS = {
+    "Google Ads": "#1b4f91",
+    "Meta Ads": "#7fa8d9",
+    "LinkedIn Ads": "#c98a2c",
+    "Organic Search": "#4caf82",
+}
+
+
 def fmt_currency(x: float) -> str:
     return "n/a" if pd.isna(x) else f"€{x:,.0f}"
 

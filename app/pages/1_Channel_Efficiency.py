@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from lib import MOBILE_CSS, PLOTLY_CONFIG, PLOTLY_THEME, chart_layout, client_selector, load_ads
+from lib import CHANNEL_COLORS, MOBILE_CSS, PLOTLY_CONFIG, PLOTLY_THEME, chart_layout, client_selector, load_ads
 from pipeline import metrics
 
 st.set_page_config(page_title="Channel Efficiency - Marketing Performance", layout="wide")
@@ -58,7 +58,6 @@ st.caption(
     "sign extra budget on that channel has stopped paying off as well as it used to."
 )
 
-CHANNEL_COLORS = {"Google Ads": "#1b4f91", "Meta Ads": "#7fa8d9", "LinkedIn Ads": "#c98a2c"}
 channel_order = [c for c in CHANNEL_COLORS if c in deciles["channel"].unique()]
 decile_cols = st.columns(len(channel_order)) if channel_order else []
 for col, channel in zip(decile_cols, channel_order):

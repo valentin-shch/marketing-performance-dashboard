@@ -36,7 +36,10 @@ summary["flag_label"] = summary["flag"].map(FLAG_LABELS)
 st.caption(
     "Auto-flagged relative to this client's own campaigns, not a global bar: \"high spend, low "
     "return\" is spend in the top quarter and ROAS in the bottom quarter; \"high return, "
-    "underfunded\" is the reverse — ROAS in the top quarter, spend in the bottom quarter."
+    "underfunded\" is the reverse — ROAS in the top quarter, spend in the bottom quarter. Flags "
+    "require both conditions to align at once, so a client whose high-spend and low-return "
+    "campaigns don't overlap may show zero flagged campaigns — that's expected, and a good sign "
+    "for that account, not a missing feature."
 )
 
 col1, col2, col3, col4 = st.columns(4)
