@@ -10,8 +10,8 @@ data here.
 
 ## Status
 
-Data generation only, right now. Cleaning pipeline, metrics, and the
-Streamlit app aren't built yet.
+Data generation and cleaning pipeline. Metrics and the Streamlit app
+aren't built yet.
 
 ## Stack
 
@@ -20,17 +20,24 @@ cleaned into parquet, and read from disk.
 
 ## Structure
 
-    data/generate.py   synthetic data generator, seeded, reproducible
-    data/raw/           generator output (messy, on purpose, committed)
-    pipeline/            cleaning + metrics (not yet built)
-    app/                 Streamlit app (not yet built)
-    tests/               pytest for the metric functions (not yet built)
+    data/generate.py     synthetic data generator, seeded, reproducible
+    data/raw/             generator output (messy, on purpose, committed)
+    pipeline/clean.py    raw exports -> clean, joined parquet
+    pipeline/metrics.py  business metric calculations (not yet built)
+    app/                  Streamlit app (not yet built)
+    tests/                pytest for the metric functions (not yet built)
 
-## Running the generator
+## Running the pipeline
 
     python data/generate.py
+    python pipeline/clean.py
 
-Regenerates `data/raw/` with an 18-month window ending last month, so the
-demo data doesn't go stale. The random seed keeps the *shape* of the data
-stable across runs — only the calendar dates and campaign quarter labels
-shift with the run date.
+`generate.py` regenerates `data/raw/` with an 18-month window ending last
+month, so the demo data doesn't go stale. The random seed keeps the
+*shape* of the data stable across runs — only the calendar dates and
+campaign quarter labels shift with the run date.
+
+`clean.py` reads `data/raw/`, fixes the deliberate messiness (duplicates,
+mixed currencies and date formats, a timezone bug, inconsistent campaign
+names, unmatched CRM deals), and writes `data/clean/*.parquet` plus a
+`data_quality_summary.json`.
