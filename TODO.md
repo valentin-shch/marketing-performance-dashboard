@@ -13,4 +13,10 @@ Things worth reconsidering later. Not blocking, just flagged.
   per-month rate would be more accurate if it turns out to skew any of the
   channel comparisons materially.
 - README has no deploy section yet — add Streamlit Community Cloud steps
-  once app/ exists.
+  once app/ is done.
+- First-ever page load (empty browser cache) takes ~15-20s locally, almost
+  entirely Streamlit's own frontend framework assets (~150 JS chunks), not
+  anything in our code — a rerun within an already-open session is ~600ms.
+  Should be faster on Streamlit Community Cloud's CDN, and cached on repeat
+  visits either way, but worth a real check once deployed rather than
+  assuming.
