@@ -6,6 +6,9 @@ while not (_repo_root / "pipeline").is_dir():
     _repo_root = _repo_root.parent
 sys.path[:0] = [str(_repo_root), str(_repo_root / "app")]
 
+import html
+
+import pandas as pd
 import streamlit as st
 
 from lib import DESKTOP_ONLY_KEY, MOBILE_CSS, MOBILE_ONLY_KEY, client_selector, fmt_currency, fmt_roas, load_ads
@@ -59,13 +62,15 @@ filtered = summary[
 
 with st.container(key=DESKTOP_ONLY_KEY):
     st.dataframe(
-        filtered[["campaign_name", "channel", "spend", "roas", "flag_label"]].rename(columns={
-            "campaign_name": "Campaign", "channel": "Channel", "spend": "Spend",
-            "roas": "ROAS", "flag_label": "Flag",
+        filtered[["campaign_name", "channel", "campaign_theme", "spend", "roas", "flag_label"]].rename(columns={
+            "campaign_name": "Campaign", "channel": "Channel", "campaign_theme": "Theme",
+            "spend": "Spend", "roas": "ROAS", "flag_label": "Flag",
         }),
         column_config={
+            "Campaign": st.column_config.TextColumn(width="medium"),
             "Spend": st.column_config.NumberColumn(format="€%,.0f"),
             "ROAS": st.column_config.NumberColumn(format="%.2fx"),
+            "Flag": st.column_config.TextColumn(width="medium"),
         },
         use_container_width=True,
         hide_index=True,
@@ -77,8 +82,17 @@ with st.container(key=MOBILE_ONLY_KEY):
     # scroll to read on a phone.
     for _, row in filtered.iterrows():
         with st.container(border=True):
-            st.markdown(f"**{row['campaign_name']}**")
-            st.caption(f"{row['channel']} · {fmt_currency(row['spend'])} · {fmt_roas(row['roas'])}")
+            # Plain **bold** markdown renders at body text size, which next
+            # to a small gray caption line reads as a headline, not a label
+            # — sized down here so the name leads without dominating the card.
+            st.markdown(
+                f'<div style="font-weight:600; font-size:0.95rem; line-height:1.3;">'
+                f'{html.escape(str(row["campaign_name"]))}</div>',
+                unsafe_allow_html=True,
+            )
+            theme = row["campaign_theme"] if pd.notna(row["campaign_theme"]) else None
+            details = [row["channel"]] + ([theme] if theme else []) + [fmt_currency(row["spend"]), fmt_roas(row["roas"])]
+            st.caption(" · ".join(details))
             if row["flag"] != "none":
                 st.caption(f":orange[{row['flag_label']}]")
 

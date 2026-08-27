@@ -3,14 +3,10 @@
 **[Live demo →](https://marketing-performance-dashboard-sc98m2xblpde4zh4yufbdb.streamlit.app/)**
 
 A white-label performance dashboard built for how a digital marketing agency actually
-works: one dataset, several clients, and someone outside the agency — a client, not an
-internal analyst — who needs to see spend, ROAS, and pipeline without learning to read raw
-ad exports.
+works: one dataset, several clients, and a client who needs to see spend, ROAS, and pipeline without learning to read raw ad exports.
 
-Pick a client from the sidebar and every page — trends, channel efficiency, campaign-level
-flags, CRM attribution, data quality — filters to that account. This is a portfolio piece,
-so the data is synthetic (details below), but the pipeline, the messiness it cleans up, and
-the dashboard logic are built the way I'd build them for a real client.
+Pick a client from the sidebar and every page (overview, channel efficiency, campaign-level
+flags, CRM attribution) filters to that account. This is a portfolio piece, so the data is synthetic (details below), but the pipeline, the messiness clean up, and the dashboard logic are built the way I build them for real clients.
 
 ## What's in it
 
