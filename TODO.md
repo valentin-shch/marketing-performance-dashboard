@@ -1,25 +1,20 @@
 # TODO
 
-Things worth reconsidering later. Not blocking, just flagged.
+Not blocking, just things I'd revisit if I had more time.
 
-- Generator reads the real system clock (`pd.Timestamp.today()`), so
-  re-running it later shifts every date even with the same seed. Good for
-  keeping the demo fresh, but raw output isn't byte-reproducible run to run.
-  Maybe worth an env var to pin the end date for tests.
-- CRM `deal_value` is sampled uniform per client (inline TODO in
-  generate.py). A real CRM's deal sizes are probably long-tailed, not flat.
-- Missing `conversion_value` is imputed with a mean revenue-per-conversion
-  by client+channel (pipeline/clean.py). Coarse — a per-campaign or
-  per-month rate would be more accurate if it turns out to skew any of the
-  channel comparisons materially.
-- Measured against the live deployment (not just local): the page shell
-  clears its loading skeleton fast (~3.5-3.8s, genuinely faster than local's
-  frontend-asset load), but the actual KPI values don't populate until
-  8-20s+ depending on the run — and a warm rerun that should hit
-  @st.cache_data's cache still took ~9.6s once, well past the brief's
-  "cold load under 3 seconds" target for data. Root cause is unclear from
-  outside (network RTT to wherever the free tier hosts this, and/or
-  constrained shared compute) — worth watching if it's consistently this
-  slow for real visitors, since right now the shell-vs-data distinction
-  means a naive glance ("looks loaded") undersells how long the real
-  numbers take to show up.
+- The generator uses today's date as the end of its window, so re-running
+  it later shifts every date, even with the same seed. Good for keeping
+  the demo fresh, but output isn't byte-identical run to run. Would want
+  a pinned end date if this ever needed reproducible tests.
+- CRM deal sizes are sampled uniform per client (see the TODO in
+  generate.py). Real deal sizes are usually long-tailed, not flat.
+- Missing conversion value gets filled with a same-client-and-channel
+  average (pipeline/clean.py). Coarse — a per-campaign or per-month rate
+  would be closer if it ever skews a channel comparison.
+- The live app takes longer to show real numbers than I'd like — the page
+  shell loads in ~3.5s, but KPIs don't populate for 8-20s+. Checked twice
+  back to back and the second visit wasn't any faster, so it's not just a
+  sleepy container waking up — looks like per-session startup cost on the
+  free hosting tier (network plus shared compute), not the data itself.
+  Can't fix that from the code; living with it unless it turns out to
+  actually bother people.

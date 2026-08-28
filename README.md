@@ -1,6 +1,6 @@
 # Marketing Performance Dashboard
 
-**[Live demo →](https://marketing-performance-dashboard-sc98m2xblpde4zh4yufbdb.streamlit.app/)**
+**[Live demo →](https://marketing-performance-dashboard-valentin.streamlit.app/)**
 
 A white-label performance dashboard built for how a digital marketing agency actually works: one dataset, several clients, and a client who needs to see spend, ROAS, and pipeline without learning to read raw ad exports.
 
