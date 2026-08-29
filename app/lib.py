@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CLEAN_DIR = BASE_DIR / "data" / "clean"
@@ -32,11 +33,26 @@ def load_quality_summary() -> dict:
         return json.load(f)
 
 
+@st.cache_resource
+def _client_by_session() -> dict[str, str]:
+    # One dict, shared across every session, for the life of the server
+    # process — st.session_state turned out not to survive a page switch in
+    # this app (each page gets a fresh one, despite sharing a session), so
+    # the choice is kept here instead, keyed by session id.
+    return {}
+
+
 def client_selector(ads: pd.DataFrame) -> str:
     clients = sorted(ads["client"].unique())
-    # key= binds this to session_state, so the choice carries over as you
-    # move between pages instead of resetting on every navigation
-    return st.selectbox("Client", clients, key="selected_client")
+    ctx = get_script_run_ctx()
+    session_id = ctx.session_id if ctx else None
+    store = _client_by_session()
+    saved = store.get(session_id) if session_id else None
+    index = clients.index(saved) if saved in clients else 0
+    client = st.selectbox("Client", clients, index=index, key="selected_client")
+    if session_id:
+        store[session_id] = client
+    return client
 
 
 # One consistent palette for channels across every page — Channel Efficiency,
